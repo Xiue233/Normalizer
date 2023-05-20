@@ -33,10 +33,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.xiue233.normalizer.ui.NavigateHandler
 import io.github.xiue233.normalizer.ui.navigation.Destinations
+import io.github.xiue233.normalizer.ui.navigation.NavigateHandler
 import kotlinx.coroutines.delay
 
 @Composable
@@ -47,9 +48,9 @@ fun SplashScreen(
         mutableStateOf(false)
     }
     LaunchedEffect(Unit) {
-        delay(500)
+        delay(100)
         visible = true
-        delay(500)
+        delay(700)
         navigateHandler(Destinations.MAIN) {
             popUpTo("splash") {
                 inclusive = true
@@ -103,7 +104,8 @@ fun SplashScreen(
                     style = TextStyle(
                         color = Color.White,
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 22.sp
+                        fontSize = 22.sp,
+                        fontStyle = FontStyle.Italic
                     )
                 )
             }

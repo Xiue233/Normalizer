@@ -1,52 +1,61 @@
 package io.github.xiue233.normalizer.ui
 
-import android.graphics.Color
 import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Text
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Column
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.xiue233.normalizer.R
 import io.github.xiue233.normalizer.ui.navigation.Destinations
-import io.github.xiue233.normalizer.ui.navigation.Destinations.Companion.navigate
+import io.github.xiue233.normalizer.ui.navigation.NavigateHandler
+import io.github.xiue233.normalizer.ui.navigation.navigate
+import io.github.xiue233.normalizer.ui.screen.MainScreen
 import io.github.xiue233.normalizer.ui.screen.SplashScreen
-
-
-typealias NavigateHandler = (Destinations, NavOptionsBuilder.() -> Unit) -> Unit
+import io.github.xiue233.normalizer.ui.theme.AppTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    lateinit var navHostController: NavHostController;
+    private lateinit var navHostController: NavHostController
 
-    val navigateHandler: NavigateHandler = { destinations, builder ->
+    private val navigateHandler: NavigateHandler = { destinations, builder ->
         navHostController.navigate(destinations, builder)
     }
 
+    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        val option = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-        val vis = window.decorView.systemUiVisibility
-        window.decorView.systemUiVisibility = option or vis
-        window.statusBarColor = Color.TRANSPARENT
+        setTheme(R.style.Theme_Normalizer_Main)
         setContent {
-            navHostController = rememberNavController();
-            NavHost(navController = navHostController, startDestination = "splash") {
-                composable(Destinations.SPLASH.route) {
-                    SplashScreen(navigateHandler)
-                }
+            AppTheme {
+                navHostController = rememberAnimatedNavController()
+                Column {
+                    AnimatedNavHost(
+                        navController = navHostController,
+                        startDestination = Destinations.SPLASH.route
+                    ) {
+                        composable(
+                            Destinations.SPLASH.route,
+                            enterTransition = { fadeIn() },
+                            exitTransition = { fadeOut() }
+                        ) {
+                            SplashScreen(navigateHandler)
+                        }
 
-                composable(Destinations.MAIN.route) {
-                    Text("Main Page")
+                        composable(
+                            Destinations.MAIN.route,
+                            enterTransition = { fadeIn() },
+                            exitTransition = { fadeOut() }
+                        ) {
+                            MainScreen()
+                        }
+                    }
                 }
             }
         }
